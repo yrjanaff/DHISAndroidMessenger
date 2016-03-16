@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.dhis.messenger.dhisandroidmessenger.R;
 import com.dhis.messenger.dhisandroidmessenger.Rest.RestLogin;
@@ -30,9 +32,9 @@ public class LoginActivity extends Activity{
         password = (EditText) findViewById(R.id.passwordInput);
         loginButton = (Button) findViewById(R.id.signinButton);
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        loginButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                System.out.println("Hei. Button pressed!");
+                Toast.makeText(LoginActivity.this, "Button Clicked", Toast.LENGTH_SHORT).show();
                 logIn(v);
             }
         });
@@ -46,15 +48,16 @@ public class LoginActivity extends Activity{
         String userString = username.getText().toString();
         String pasString = password.getText().toString();
 
-        serverString = "http://193.157.213.241:8080/api/me";
+        serverString = "http://193.157.213.241:8080";
 
         String formatCredentials = String.format("%s:%s", userString, pasString);
         String server = serverString + (serverString.endsWith("/") ? "" : "/");
         String credentials = Base64.encodeToString(formatCredentials.getBytes(), Base64.NO_WRAP);
 
-        RestLogin restLogin = new RestLogin();
-        String response = restLogin.DHISLogin(server, credentials);
+        String[] params = {server, credentials};
 
-        System.out.println("\n\nResponse: " + response);
+        new RestLogin().execute(params);
+
+        //System.out.println("\n\nResponse: " + response);
     }
 }

@@ -79,10 +79,9 @@
         android:layout_below="@+id/serverInput"
         android:layout_marginTop="10dp"
         android:background="@drawable/blue_button"
-        android:enabled="false"
+        android:enabled="true"
         android:text="Sign in"
-        android:textColor="#FFFFFF"
-        android:onClick="logIn"/>
+        android:textColor="#FFFFFF" />
 
     <ImageView
         android:id="@+id/about"

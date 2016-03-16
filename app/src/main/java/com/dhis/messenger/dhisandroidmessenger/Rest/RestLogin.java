@@ -1,5 +1,7 @@
 package com.dhis.messenger.dhisandroidmessenger.Rest;
 
+import android.os.AsyncTask;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +17,7 @@ import javax.net.ssl.SSLHandshakeException;
 /**
  * Created by yrjanaff on 16.03.2016.
  */
-public class RestLogin {
+public class RestLogin extends AsyncTask<String, String, Integer> {
 
     private final static int IO_EXCEPTION = 10;
     private final static int SOCKET_TIMEOUT_EXCEPTION = 11;
@@ -25,12 +27,14 @@ public class RestLogin {
     public final static int JSON_EXCEPTION = 14;
     public final static int MALFORMED_URL_EXCEPTION = 15;
 
-    public String DHISLogin(String server, String userCredentials) {
+    public int DHISLogin(String server, String userCredentials) {
         int code = -1;
         String body = "";
         HttpURLConnection connection = null;
+        System.out.println("UserCredential: " + userCredentials);
         try {
             URL url = new URL(server);
+            System.out.println(server);
             connection = (HttpURLConnection) url.openConnection();
             connection.setInstanceFollowRedirects(false);
             connection.setConnectTimeout(3000);
@@ -38,8 +42,9 @@ public class RestLogin {
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestMethod("GET");
             connection.setDoInput(true);
+            System.out.println(connection.toString());
             connection.connect();
-
+            System.out.println("YO!!!");
             code = connection.getResponseCode();
             body = readInputStream(connection.getInputStream());
         } catch (SSLHandshakeException e) {
@@ -49,6 +54,7 @@ public class RestLogin {
         } catch (SocketTimeoutException e) {
             code = HttpURLConnection.HTTP_GATEWAY_TIMEOUT;
         } catch (IOException one) {
+            System.out.println("IO: " + one.toString());
             try {
                 if (connection != null) {
                     code = connection.getResponseCode();
@@ -58,6 +64,7 @@ public class RestLogin {
                 code = IO_EXCEPTION;
             }
         } catch (Exception e) {
+            System.out.println("Exception: " + e.toString());
             code = OTHER_EXCEPTION;
         } finally {
             if (connection != null) {
@@ -66,7 +73,7 @@ public class RestLogin {
         }
 
         System.out.println("\n\nCode: " + code + "\n\nBody: " + body);
-        return body;
+        return code;
     }
 
 
@@ -91,5 +98,10 @@ public class RestLogin {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    protected Integer doInBackground(String... params) {
+        return DHISLogin(params[0], params[1]);
     }
 }
